@@ -1,0 +1,47 @@
+<?php
+/**
+ * @file
+ * Code for the Open Atrium LDAP feature.
+ */
+
+include_once 'oa_ldap.features.inc';
+
+/**
+ * Implements hook_ldap_user_edit_user_alter()
+ *
+ * Alter the user name for new accounts to allow email_registration module to
+ * create the name in email_registration_user_insert()
+ */
+function oa_ldap_ldap_user_edit_user_alter(&$edit, $ldap_user, $ldap_server, $prov_events = NULL) {
+  $existing_account = NULL;
+
+  // Exit if Email Registration is not enabled
+  if (!module_exists('email_registration')) {
+    return;
+  }
+
+  // Determine if user exists
+  if (!empty($edit['name'])) {
+    $existing_account = user_load_by_name($edit['name']);
+  }
+  if (empty($existing_account) && !empty($edit['mail'])) {
+    $existing_account = user_load_by_mail($edit['mail']);
+  }
+
+  // Ensure name stays the same
+  if (!empty($existing_account)) {
+    $edit['name'] = $existing_account->name;
+    return;
+  }
+
+  // Exit if not creating the user
+  if (!empty($prov_events) && !in_array(LDAP_USER_EVENT_CREATE_DRUPAL_USER, $prov_events)) {
+    return;
+  }
+
+  // Alter the name if its the same as mail so email_registration will create it
+  // @see email_registration_form_user_register_form_alter()
+  if (isset($edit['name']) && isset($edit['mail']) && $edit['name'] == $edit['mail']) {
+    $edit['name'] = 'email_registration_' . user_password();
+  }
+}

@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * Delete fields and create new fields of type ldap_entry_reference
+ */
+function oa_ldap_update_7100(&$sandbox) {
+  // Ensure there are no stale prices in the field cache.
+  field_cache_clear();
+
+  $field_names = array('oa_ldap_member_dn', 'oa_ldap_admin_dn');
+  foreach ($field_names as $field_name) {
+    if (!field_info_field($field_name)) {
+      continue;
+    }
+
+    $updated = db_update('field_config')
+      ->fields(array('active' => 1))
+      ->condition('field_name', $field_name, '=')
+      ->condition('deleted', 0, '=')
+      ->execute();
+
+    // In case the field is inactive, first activate it and clear the field cache.
+    if (!empty($updated)) {
+      field_cache_clear();
+    }
+
+    // Delete the field.
+    field_delete_field($field_name);
+  }
+
+  return t('All fields have been updated.');
+}
+
+
+/**
+ * Delete ldap dn fields on groups that are now provided by og_ldap_api
+ * - No one has adopted the module yet, so we're just deleting
+ */
+function oa_ldap_update_7101(&$sandbox) {
+  // Ensure there are no stale prices in the field cache.
+  field_cache_clear();
+
+  $field_names = array('oa_ldap_members', 'oa_ldap_admins');
+  foreach ($field_names as $field_name) {
+    if (!field_info_field($field_name)) {
+      continue;
+    }
+
+    $updated = db_update('field_config')
+      ->fields(array('active' => 1))
+      ->condition('field_name', $field_name, '=')
+      ->condition('deleted', 0, '=')
+      ->execute();
+
+    // In case the field is inactive, first activate it and clear the field cache.
+    if (!empty($updated)) {
+      field_cache_clear();
+    }
+
+    // Delete the field.
+    field_delete_field($field_name);
+  }
+
+  return t('All fields have been updated.');
+}

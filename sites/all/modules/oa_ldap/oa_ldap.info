@@ -1,0 +1,32 @@
+name = Open Atrium LDAP
+description = LDAP customizations for Open Atrium
+core = 7.x
+package = Open Atrium
+php = 5.2.4
+version = 7.x-1.0-beta1
+project = oa_ldap
+dependencies[] = ctools
+dependencies[] = entity
+dependencies[] = features
+dependencies[] = feeds
+dependencies[] = ldap_authorization_og
+dependencies[] = ldap_entry_reference
+dependencies[] = ldap_user
+dependencies[] = oa_core
+dependencies[] = og
+dependencies[] = og_ldap_api
+dependencies[] = og_ldap_api_ldap
+features[ctools][] = feeds:feeds_importer_default:1
+features[features_api][] = api:2
+features[feeds_importer][] = oa_ldap_groups
+features[field_instance][] = node-oa_group-og_ldap_api_admins
+features[field_instance][] = node-oa_group-og_ldap_api_members
+features[field_instance][] = node-oa_space-og_ldap_api_admins
+features[field_instance][] = node-oa_space-og_ldap_api_members
+
+; Information added by Drupal.org packaging script on 2014-07-28
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "oa_ldap"
+datestamp = "1406510034"
+
